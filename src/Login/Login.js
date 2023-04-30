@@ -12,6 +12,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
+import WomanBuying from "./login.jpg"
+import CardMedia from "@mui/material/CardMedia"
 
 function Copyright(props) {
   return (
@@ -37,33 +39,39 @@ export default function Login() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            p: 3,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            background: "white",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          {showLoading ? (
-            <Loading />
-          ) : (
-            <LoginForm setShowLoading={setShowLoading} />
-          )}
-        </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
+      <Box sx={{ display: "flex"}} style={{ backgroundColor: "white" }}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 8,
+              p: 3,
+              borderRadius: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            {showLoading ? (
+              <Loading />
+            ) : (
+              <LoginForm setShowLoading={setShowLoading} />
+            )}
+          </Box>
+          <Copyright sx={{ mt: 8, mb: 4 }} />
+        </Container>
+        <CardMedia
+          sx={{ m: 2, width:'40%' }}
+          component="img"
+          image={WomanBuying}
+        />
+      </Box>
     </ThemeProvider>
   )
 }
@@ -122,10 +130,10 @@ function LoginForm(props) {
         id="password"
         autoComplete="current-password"
       />
-      <FormControlLabel
+      {/* <FormControlLabel
         control={<Checkbox value="remember" color="primary" />}
         label="Remember me"
-      />
+      /> */}
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
         Sign In
       </Button>

@@ -12,9 +12,17 @@ import CardMedia from "@mui/material/CardMedia"
 import { IconButton, Typography } from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
 import RemoveIcon from "@mui/icons-material/Remove"
+import Alert from "@mui/material/Alert"
+import AlertTitle from "@mui/material/AlertTitle"
+import CloseIcon from "@mui/icons-material/Close"
+import Modal from "@mui/material/Modal"
+import { useNavigate } from "react-router-dom"
+
 
 export default function CartProducts(items) {
   const api_url = process.env.REACT_APP_API_URL
+  const [open, setOpen] = React.useState(false)
+  const navigate = useNavigate()
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -87,6 +95,7 @@ export default function CartProducts(items) {
   }
 
   const checkout = (products) => {
+    setOpen(true)
     fetch(api_url + "buy", {
       method: "POST",
       body: JSON.stringify({ prods: products }),
@@ -99,6 +108,8 @@ export default function CartProducts(items) {
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
+        //setOpen(false)
+        //navigate("/orders")
         // Handle data
       })
       .catch((err) => {
@@ -143,6 +154,31 @@ export default function CartProducts(items) {
   }))
   return (
     <>
+      <Modal open={open} sx={{ mt: 10 }}>
+        <Box sx={{ display: "flex" }}>
+          <Alert
+            severity="info"
+            sx={{ m: "auto" }}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false)
+                  navigate('/orders')
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            <AlertTitle>Info</AlertTitle>
+            <strong>Order Completed!</strong>
+          </Alert>
+        </Box>
+      </Modal>
+
       <TableContainer sx={{ backgroundColor: "#eeeeee" }}>
         <Table aria-label="customized table">
           <TableHead>

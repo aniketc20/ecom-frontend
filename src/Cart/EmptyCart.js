@@ -1,10 +1,10 @@
 import React from "react"
-import EmptyCartIcon from "./cart.svg"
+import EmptyCartIcon from "./emptyCart.svg"
 
 export default function EmptyCart() {
   return (
-    <div>
-      <img src={EmptyCartIcon} alt="React Logo" />
+    <div style={{backgroundColor: "white"}}>
+      <img src={EmptyCartIcon} alt="No Order Logo" />
     </div>
   )
 }

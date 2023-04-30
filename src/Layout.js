@@ -43,6 +43,7 @@ function Layout() {
           setIsAuthenticated(true)
           navigate("/")
         } else {
+          setIsAuthenticated(false)
           navigate("/login")
         }
       })
@@ -271,7 +272,7 @@ function Layout() {
                 </MenuItem>
               </Menu>
             </Box>
-          ) : null}
+          ) : <></>}
         </Toolbar>
       </Container>
       <Outlet />
