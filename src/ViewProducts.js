@@ -17,6 +17,7 @@ import IconButton from "@mui/material/IconButton"
 import CloseIcon from "@mui/icons-material/Close"
 import Modal from "@mui/material/Modal"
 
+
 export default function ViewProducts() {
   const api_url = process.env.REACT_APP_API_URL
   const [products, setProducts] = useState([])
@@ -47,7 +48,7 @@ export default function ViewProducts() {
     fetch(api_url + "dashboard", {
       credentials: "include",
       method: "GET",
-      mode: "cors",
+      //mode: "cors",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -58,7 +59,6 @@ export default function ViewProducts() {
           navigate("/login")
         }
         setProducts(data.products)
-        console.log("useeffect")
       })
       .catch((err) => {
         console.log(err.message)

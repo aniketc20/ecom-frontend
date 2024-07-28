@@ -57,7 +57,6 @@ const responsive = {
 }
 
 const Cards = (props) => {
-  console.log(props)
   return (
     <Carousel responsive={responsive} sx={{ display: "flex" }}>
       <CardSwipeable key={1} item={props.products[0]} />
@@ -68,7 +67,6 @@ const Cards = (props) => {
 
 function CardSwipeable(props) {
   const classes = useStyles()
-  console.log(props.item)
   return (
     <div classes={classes.root}>
       <Card className={`${classes.root} ${classes.card}`}>

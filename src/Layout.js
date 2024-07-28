@@ -18,15 +18,17 @@ import StorefrontIcon from "@mui/icons-material/Storefront"
 import InventoryIcon from "@mui/icons-material/Inventory"
 import LogoutIcon from "@mui/icons-material/Logout"
 import Logo from "./logo.svg"
+import useAuthStore from "./Login/AuthStore.tsx";
+
 
 const api_url = process.env.REACT_APP_API_URL
 
 function Layout() {
   const [anchorElNav, setAnchorElNav] = React.useState(null)
   const [anchorElUser, setAnchorElUser] = React.useState(null)
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const userName = localStorage.getItem("user")
   const navigate = useNavigate()
+  const {isAuthenticated, logOut} = useAuthStore()
 
   useEffect(() => {
     fetch(api_url + "isAuthenticated", {
@@ -38,12 +40,10 @@ function Layout() {
       },
     })
       .then((res) => res.json())
-      .then((user) => {
-        if (user.isAuthenticated) {
-          setIsAuthenticated(true)
+      .then(() => {
+        if (isAuthenticated) {
           navigate("/")
         } else {
-          setIsAuthenticated(false)
           navigate("/login")
         }
       })
@@ -76,9 +76,8 @@ function Layout() {
         "Content-type": "application/json; charset=UTF-8",
       },
     })
-      .then((data) => {
-        console.log(data)
-        setIsAuthenticated(false)
+      .then(() => {
+        logOut();
         window.location.replace("/login")
       })
       .catch((err) => {

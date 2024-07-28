@@ -3,8 +3,8 @@ import Avatar from "@mui/material/Avatar"
 import Button from "@mui/material/Button"
 import CssBaseline from "@mui/material/CssBaseline"
 import TextField from "@mui/material/TextField"
-import FormControlLabel from "@mui/material/FormControlLabel"
-import Checkbox from "@mui/material/Checkbox"
+// import FormControlLabel from "@mui/material/FormControlLabel"
+// import Checkbox from "@mui/material/Checkbox"
 import { Link } from "react-router-dom"
 import Loading from "./Loading"
 import Box from "@mui/material/Box"
@@ -14,6 +14,7 @@ import Container from "@mui/material/Container"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import WomanBuying from "./login.jpg"
 import CardMedia from "@mui/material/CardMedia"
+import useAuthStore from "./AuthStore.tsx"
 
 function Copyright(props) {
   return (
@@ -78,6 +79,7 @@ export default function Login() {
 
 function LoginForm(props) {
   const api_url = process.env.REACT_APP_API_URL
+  const {login} = useAuthStore()
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -89,8 +91,8 @@ function LoginForm(props) {
         username: data.get("username"),
         password: data.get("password"),
       }),
-      mode: "cors",
-      credentials: "include",
+      //mode: "cors",
+      credentials: 'include',
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
@@ -100,9 +102,9 @@ function LoginForm(props) {
         props.setShowLoading(false)
         if (data.isAuthenticated) {
           localStorage.setItem("user", data.userName)
+          login();
           window.location.replace("/")
         }
-        console.log(data)
       })
       .catch((err) => {
         console.log(err.message)

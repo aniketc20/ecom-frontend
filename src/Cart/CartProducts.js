@@ -17,10 +17,16 @@ import AlertTitle from "@mui/material/AlertTitle"
 import CloseIcon from "@mui/icons-material/Close"
 import Modal from "@mui/material/Modal"
 import { useNavigate } from "react-router-dom"
+import { incrementCall } from "./getCart"
+import { decrementCall } from "./getCart"
+import { removeItemApi } from "./getCart"
+import { buyApi } from "./getCart"
 
 
-export default function CartProducts(items) {
-  const api_url = process.env.REACT_APP_API_URL
+export default function CartProducts({items}) {
+  const [products, setProducts] = React.useState(items.products);
+  const [sum,setSum] = React.useState(products.reduce((prevSum,product)=>{
+    return prevSum+product.price*product.qty},0));
   const [open, setOpen] = React.useState(false)
   const navigate = useNavigate()
 
@@ -34,114 +40,61 @@ export default function CartProducts(items) {
     },
   }))
 
-  const increment = (pId, price) => {
-    fetch(api_url + "addToCart", {
-      method: "POST",
-      body: pId,
-      credentials: "include",
-      mode: "cors",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        // Handle data
-      })
-      .catch((err) => {
-        console.log(err.message)
-      })
-    items.items.forEach((element) => {
-      if (element.productId === pId) {
-        element.qty++
-        ++document.getElementById(pId).innerHTML
-        items.setSum(items.sum + price)
-      }
-    })
-    console.log(items.items)
-  }
-
-  const decrement = (pId, price) => {
-    var input = document.getElementById(pId)
-    var value = input.innerHTML
-    if (value >= 2) {
-      fetch(api_url + "decreaseQty", {
-        method: "POST",
-        body: pId,
-        credentials: "include",
-        mode: "cors",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data)
-          // Handle data
-        })
-        .catch((err) => {
-          console.log(err.message)
-        })
-      items.items.forEach((element) => {
-        if (element.productId === pId) {
-          --element.qty
-          --document.getElementById(pId).innerHTML
-          items.setSum(items.sum - price)
-        }
-      })
-      console.log(items.items)
+  const increment = async (pId, price) => {
+    const {data, status} = await incrementCall(pId)
+    if(status === 200) {
+      setProducts(data.products);
+      setSum(sum+price)
     }
   }
 
-  const checkout = (products) => {
-    setOpen(true)
-    fetch(api_url + "buy", {
-      method: "POST",
-      body: JSON.stringify({ prods: products }),
-      credentials: "include",
-      mode: "cors",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        //setOpen(false)
-        //navigate("/orders")
-        // Handle data
-      })
-      .catch((err) => {
-        console.log(err.message)
-      })
+  const decrement = async (pId, price) => {
+    const decrementedItem = products.find(item => item.productId === pId)
+    if (decrementedItem.qty >= 2) {
+      const {data, status} = await decrementCall(pId)
+      if(status === 200) {
+        setProducts(data.products);
+        setSum(sum-price)
+      }
+    }
   }
 
-  const removeItem = (pId) => {
-    fetch(api_url + "removeItem", {
-      method: "POST",
-      body: pId,
-      credentials: "include",
-      mode: "cors",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.products)
-        items.setItems(data.products)
-        let newSum = 0
-        data.products.forEach((element) => {
-          newSum += element.price * element.qty
-        })
-        items.setSum(newSum)
-        // Handle data
-      })
-      .catch((err) => {
-        console.log(err.message)
-      })
+  const checkout = async (products) => {
+    console.log(products)
+    const {data, status} = await buyApi(products)
+    if(status === 200) {
+      navigate("/orders")
+    }
+
+    // setOpen(true)
+    // fetch(api_url + "buy", {
+    //   method: "POST",
+    //   body: JSON.stringify({ prods: products }),
+    //   credentials: "include",
+    //   mode: "cors",
+    //   headers: {
+    //     "Content-type": "application/json; charset=UTF-8",
+    //   },
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log(data)
+    //     //setOpen(false)
+    //     //navigate("/orders")
+    //     // Handle data
+    //   })
+    //   .catch((err) => {
+    //     console.log(err.message)
+    //   })
   }
+
+  const removeItem = async (pId) => {
+    const {data, status} = await removeItemApi(pId)
+    if(status === 200) {
+      const removedItem = products.find(item => item.productId === pId)
+      setProducts(data.products);
+      setSum(sum-removedItem.price*removedItem.qty)
+    }}
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
@@ -166,7 +119,6 @@ export default function CartProducts(items) {
                 size="small"
                 onClick={() => {
                   setOpen(false)
-                  navigate('/orders')
                 }}
               >
                 <CloseIcon fontSize="inherit" />
@@ -216,7 +168,7 @@ export default function CartProducts(items) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.items.map((row) => (
+            {products.map((row) => (
               <StyledTableRow key={row.productId}>
                 <StyledTableCell
                   align="center"
@@ -285,10 +237,10 @@ export default function CartProducts(items) {
       </TableContainer>
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Typography sx={{ px: 1 }}>Total price:</Typography>
-        <Typography id="demo">{items.sum}</Typography>
+        <Typography id="demo">{sum}</Typography>
       </Box>
       <Button
-        onClick={() => checkout(items.items, items.sum)}
+        onClick={() => checkout(products)}
         sx={{ fontSize: 12, my: 2 }}
         variant="contained"
       >
